@@ -1,5 +1,84 @@
 # @mastra/core
 
+## 1.0.0-beta.3
+
+### Major Changes
+
+- Use tool's outputSchema to validate results and return an error object if schema does not match output results. ([#9664](https://github.com/mastra-ai/mastra/pull/9664))
+
+  ```typescript
+  const getUserTool = createTool({
+    id: 'get-user',
+    outputSchema: z.object({
+      id: z.string(),
+      name: z.string(),
+      email: z.string().email(),
+    }),
+    execute: async inputData => {
+      return { id: '123', name: 'John' };
+    },
+  });
+  ```
+
+  When validation fails, the tool returns a `ValidationError`:
+
+  ```typescript
+  // Before v1 - invalid output would silently pass through
+  await getUserTool.execute({});
+  // { id: "123", name: "John" } - missing email
+
+  // After v1 - validation error is returned
+  await getUserTool.execute({});
+  // {
+  //   error: true,
+  //   message: "Tool output validation failed for get-user. The tool returned invalid output:\n- email: Required\n\nReturned output: {...}",
+  //   validationErrors: { ... }
+  // }
+  ```
+
+### Patch Changes
+
+- dependencies updates: ([#10131](https://github.com/mastra-ai/mastra/pull/10131))
+  - Updated dependency [`hono@^4.10.5` ↗︎](https://www.npmjs.com/package/hono/v/4.10.5) (from `^4.9.7`, in `dependencies`)
+
+- Only handle download image asset transformation if needed ([#10122](https://github.com/mastra-ai/mastra/pull/10122))
+
+- Add serializedStepGraph to runExecutionResult response ([#10004](https://github.com/mastra-ai/mastra/pull/10004))
+
+- Fix tool outputSchema validation to allow unsupported Zod types like ZodTuple. The outputSchema is only used for internal validation and never sent to the LLM, so model compatibility checks are not needed. ([#9409](https://github.com/mastra-ai/mastra/pull/9409))
+
+- Fix vector definition to fix pinecone ([#10150](https://github.com/mastra-ai/mastra/pull/10150))
+
+- Add type bailed to workflowRunStatus ([#10091](https://github.com/mastra-ai/mastra/pull/10091))
+
+- Fix input tool validation when no inputSchema is provided ([#9941](https://github.com/mastra-ai/mastra/pull/9941))
+
+- Add an additional check to determine whether the model natively supports specific file types. Only download the file if the model does not support it natively. ([#9790](https://github.com/mastra-ai/mastra/pull/9790))
+
+- Add restart method to workflow run that allows restarting an active workflow run ([#9750](https://github.com/mastra-ai/mastra/pull/9750))
+  Add status filter to `listWorkflowRuns`
+  Add automatic restart to restart active workflow runs when server starts
+
+- Add timeTravel to workflows. This makes it possible to start a workflow run from a particular step in the workflow ([#9994](https://github.com/mastra-ai/mastra/pull/9994))
+
+  Example code:
+
+  ```ts
+  const result = await run.timeTravel({
+    step: 'step2',
+    inputData: {
+      value: 'input',
+    },
+  });
+  ```
+
+- Fixes assets not being downloaded when available ([#10079](https://github.com/mastra-ai/mastra/pull/10079))
+
+- Remove unused dependencies ([#10019](https://github.com/mastra-ai/mastra/pull/10019))
+
+- Updated dependencies [[`a64d16a`](https://github.com/mastra-ai/mastra/commit/a64d16aedafe57ee5707bdcc25f96e07fa1a0233)]:
+  - @mastra/observability@1.0.0-beta.1
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
