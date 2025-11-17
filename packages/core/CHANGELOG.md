@@ -1,5 +1,11 @@
 # @mastra/core
 
+## 0.24.2-alpha.0
+
+### Patch Changes
+
+- Fix vector definition to fix pinecone ([#10179](https://github.com/mastra-ai/mastra/pull/10179))
+
 ## 0.24.1
 
 ### Patch Changes
